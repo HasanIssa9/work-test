@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "79600034667",
+    "firebase_url": "https://work-test-9e8b1-default-rtdb.firebaseio.com",
+    "project_id": "work-test-9e8b1",
+    "storage_bucket": "work-test-9e8b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79600034667:android:17a47455cd98d1200de22e",
+        "android_client_info": {
+          "package_name": "com.example.app_test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDz05HsQyTiY3uXMiYLr2uKn5kRIuSixqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79600034667:android:3413697682623bc90de22e",
+        "android_client_info": {
+          "package_name": "com.example.work_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDz05HsQyTiY3uXMiYLr2uKn5kRIuSixqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
