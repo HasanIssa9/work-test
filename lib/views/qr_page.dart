@@ -1,32 +1,50 @@
 import 'package:firebase_database/firebase_database.dart';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
-import 'package:work_app/extensions/dropdown_input.dart';
-import 'package:work_app/extensions/snack_bar.dart';
-import 'package:work_app/extensions/text_input.dart';
-import 'package:work_app/views/qr_page.dart';
+import 'package:work_app/extensions/check_id.dart';
+import 'package:work_app/views/home_page.dart';
 import 'package:work_app/views/students_page.dart';
 
-import '../extensions/check_id.dart';
+import '../extensions/dropdown_input.dart';
+import '../extensions/qr_scanner.dart';
+import '../extensions/snack_bar.dart';
+import '../extensions/text_input.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class QrPage extends StatefulWidget {
+  const QrPage({super.key});
+
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<QrPage> createState() => _QrPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _QrPageState extends State<QrPage> {
   final dbstd = FirebaseDatabase.instance.ref().child('data');
   final _formKey = GlobalKey<FormState>();
+  String? _result;
+  List<String>? listOfResult = [];
+
   final TextEditingController number = TextEditingController();
   final TextEditingController name = TextEditingController();
-  String? conValue = '';
+  final TextEditingController conValue = TextEditingController();
+  final TextEditingController speValue = TextEditingController();
   String? empValue = '';
-  String? speValue = '';
   String? selectedDate = DateFormat('y-MM-d').format(DateTime.now());
   double widthOfResize = 1000;
-  CheckId chackId = CheckId();
+  CheckId checkId = CheckId();
+  void setResult(String result) {
+    setState(() {
+      _result = result;
+      listOfResult = _result?.split('\n');
+
+      // Set each TextEditingController with the respective value from the list
+      if (listOfResult != null && listOfResult!.isNotEmpty) {
+        number.text = listOfResult!.length > 0 ? listOfResult![0] : '';
+        name.text = listOfResult!.length > 1 ? listOfResult![1] : '';
+        conValue.text = listOfResult!.length > 2 ? listOfResult![2] : '';
+        speValue.text = listOfResult!.length > 3 ? listOfResult![3] : '';
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,57 +52,60 @@ class _HomePageState extends State<HomePage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: (width <= widthOfResize)
-            ? AppBar(
-                leadingWidth: 100,
-                leading: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const StudentsPage()),
-                    );
-                  },
-                  icon: const Icon(Icons.group),
-                ),
-                actions: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const QrPage()),
-                      );
-                    },
-                    icon: const Icon(Icons.adf_scanner),
-                  ),
-                  Container(
-                    width: 25,
-                  ),
-                ],
-                elevation: 0,
-              )
-            : null,
+        appBar: AppBar(
+          leadingWidth: 100,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const StudentsPage()),
+              );
+            },
+            icon: const Icon(Icons.group),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                );
+              },
+              icon: const Icon(Icons.home),
+            ),
+            Container(
+              width: 25,
+            ),
+          ],
+          elevation: 0,
+        ),
         body: Center(
           child: Container(
             padding: const EdgeInsets.all(5),
             margin: const EdgeInsets.all(5),
-            width: (width > 1200) ? width * 0.9 : width * 0.97,
-            decoration: (width > widthOfResize)
-                ? BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.lightGreen, width: 6))
-                : null,
+            width: width * 0.97,
             child: Row(
               children: [
                 Expanded(
                     child: Column(
                   children: [
-                    const Center(
-                        child: Text(
-                      'سجل أستلام كشوف \n   الطلبة الوافدين',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                    )),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.cyan,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 28, vertical: 8),
+                          foregroundColor: Colors.black,
+                          textStyle: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 22)),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              QrCodeScanner(setResult: setResult),
+                        ),
+                      ),
+                      icon: const Icon(Icons.qr_code),
+                      label: const Text('امسح الكود'),
+                    ),
                     Expanded(
                       child: SingleChildScrollView(
                         child: Container(
@@ -100,22 +121,20 @@ class _HomePageState extends State<HomePage> {
                                   hintName: 'تسلسل: ',
                                   isNumber: true,
                                   controller: number,
-                                  isFocus: true,
                                 ),
                                 TextInput(
                                   hintName: 'أسم الطالب: ',
                                   controller: name,
                                 ),
-                                DropdownInput(
-                                  isCou: true,
-                                  onChanged: (value) {
-                                    conValue = value;
-                                  },
+                                TextInput(
+                                  hintName: 'الدولة: ',
+                                  controller: conValue,
+                                  isCon: true,
                                 ),
-                                DropdownInput(
-                                  onChanged: (value) {
-                                    speValue = value;
-                                  },
+                                TextInput(
+                                  hintName: 'الاختصاص: ',
+                                  controller: speValue,
+                                  isCon: true,
                                 ),
                                 DropdownInput(
                                     isEmp: true,
@@ -196,9 +215,9 @@ class _HomePageState extends State<HomePage> {
                                             fontSize: 22)),
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
-                                        String? key = await chackId
+                                        String? key = await checkId
                                             .findItemKey(number.text);
-                                        bool isExist = await chackId
+                                        bool isExist = await checkId
                                             .checkIfItemExists(key ?? '');
                                         if (isExist &&
                                             key != '' &&
@@ -206,11 +225,11 @@ class _HomePageState extends State<HomePage> {
                                           buildShowDialog(context, key);
                                         } else {
                                           dbstd.push().set({
-                                            'conName': conValue,
+                                            'conName': conValue.text,
                                             'date': selectedDate,
                                             'empName': empValue,
                                             'id': number.text,
-                                            'speName': speValue,
+                                            'speName': speValue.text,
                                             'stdName': name.text
                                           }).asStream();
                                           ScaffoldMessenger.of(context)
@@ -221,6 +240,8 @@ class _HomePageState extends State<HomePage> {
                                           setState(() {
                                             number.clear();
                                             name.clear();
+                                            conValue.clear();
+                                            speValue.clear();
                                           });
                                         }
                                       }
@@ -237,15 +258,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 )),
-                (width > widthOfResize)
-                    ? const VerticalDivider(
-                        color: Colors.lightGreen,
-                        thickness: 6,
-                      )
-                    : Container(),
-                (width > widthOfResize)
-                    ? const Expanded(child: StudentsPage())
-                    : Container(),
               ],
             ),
           ),
@@ -272,6 +284,8 @@ class _HomePageState extends State<HomePage> {
                   setState(() {
                     number.clear();
                     name.clear();
+                    conValue.clear();
+                    speValue.clear();
                   });
                   Navigator.of(context).pop();
                   return;

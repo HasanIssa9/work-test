@@ -1,1 +1,59 @@
-import 'package:flutter/material.dart';import 'package:flutter/services.dart';class TextInput extends StatelessWidget {  TextInput(      {super.key,      required this.hintName,      this.isNumber = false,      required this.controller});  final String hintName;  final bool isNumber;  final TextEditingController controller;  @override  Widget build(BuildContext context) {    return TextFormField(      controller: controller,      validator: (String? value) {        if (value!.isEmpty) {          return 'هذا الحقل مطلوب';        } else if (isNumber == true && value.length >= 6) {          return 'الرقم كبير';        } else if (isNumber == false && value.length <= 8) {          return 'الاسم قصير';        } else {          return null;        }      },      keyboardType: (isNumber) ? TextInputType.number : TextInputType.name,      inputFormatters: (isNumber)          ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]          : null,      decoration: InputDecoration(        label: Text(          hintName,          style: const TextStyle(            fontSize: 18,            fontWeight: FontWeight.bold,          ),        ),        enabledBorder: OutlineInputBorder(          borderRadius: BorderRadius.circular(16),          borderSide: const BorderSide(            color: Colors.lightGreen,            width: 2,          ),        ),        border: OutlineInputBorder(          borderSide: const BorderSide(),          borderRadius: BorderRadius.circular(16),        ),      ),    );  }}
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class TextInput extends StatelessWidget {
+  TextInput(
+      {super.key,
+      required this.hintName,
+      this.isNumber = false,
+      required this.controller,
+      this.isFocus = false,
+      this.isCon = false});
+  final String hintName;
+  final bool isNumber;
+  final bool isFocus;
+  final bool isCon;
+  final TextEditingController controller;
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      validator: (String? value) {
+        if (value!.isEmpty) {
+          return 'هذا الحقل مطلوب';
+        } else if (isNumber == true && value.length >= 6) {
+          return 'الرقم كبير';
+        } else if (isNumber == false && isCon == false && value.length <= 8) {
+          return 'الاسم قصير';
+        } else {
+          return null;
+        }
+      },
+      autofocus: isFocus,
+      keyboardType: (isNumber) ? TextInputType.number : TextInputType.name,
+      inputFormatters: (isNumber)
+          ? <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly]
+          : null,
+      decoration: InputDecoration(
+        label: Text(
+          hintName,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: Colors.lightGreen,
+            width: 2,
+          ),
+        ),
+        border: OutlineInputBorder(
+          borderSide: const BorderSide(),
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+  }
+}
